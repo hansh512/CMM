@@ -1,7 +1,7 @@
 ################################################################################
 # Code Written by Hans Halbmayr
 # Created On: 28.05.2021
-# Last change on: 29.06.2021
+# Last change on: 01.07.2021
 #
 # Module: CMM
 #
@@ -158,7 +158,7 @@ param([Parameter(Mandatory = $true, Position = 0)][string]$ModuleName,
             $d=([System.DateTime]::Now);
             [int]$madatoryHostVal=$true; #([System.String]::IsNullOrEmpty($HostVarDefaultValue)); 
             # add 5 empty entries for future use to cred and hostname
-            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
             $metaData=@{
                 (($Script:credParamPrefix)+$PSCredentialVarName)=('PSCredential'+$Script:pPropSepVal+'1'+$Script:pPropSepVal+$PSCredentialVarHelpMessage+($Script:pPropSepVal)+$spareEntries);
                 (($Script:hostParamPrefix)+$HostVarName)=('String'+$Script:pPropSepVal+$madatoryHostVal+($Script:pPropSepVal)+$HostVarHelpMessage+($Script:pPropSepVal)+$HostVarDefaultValue+$spareEntries);
@@ -347,7 +347,7 @@ param([Parameter(Mandatory = $true, Position = 0)]
                 $dataString+=($Script:pPropSepVal);
             }; # end else
             # add 5 empty entries for future use
-            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
             $metaData.Add($newEntry,($dataString+$spareEntries));
 
             $pList=($metaData.(($script:metadataPList))).Split($Script:pPropSepVal);
