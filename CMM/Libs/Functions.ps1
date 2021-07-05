@@ -5,7 +5,7 @@
 #
 # Module: CMM
 #
-# Version 0.90
+# Version 0.91
 #
 # Purpos: Function for module CMM
 ################################################################################
@@ -119,6 +119,7 @@ param([Parameter(Mandatory = $true, Position = 0)][string]$ModuleName,
      )
 
     begin {
+        $errMsg='Unhandled exeption';
         if (! (verifyModuleName -ModuleName $ModuleName -TextString 'module name'))
         {
             throw('The name of the module contains characters which are not supported by the module ' + $Script:moduleName);
@@ -132,8 +133,10 @@ param([Parameter(Mandatory = $true, Position = 0)][string]$ModuleName,
     process {        
         try {        
             $msg='Testing if module already registerd';
+            $errMsg=('Failed to get data for PowerShell module ' + $ModuleName)
             $MinModuleVersion=(convertVersion -Version $MinModuleVersion);
             $ModuleName=($ModuleName.ToUpper());
+            $errMsg='Failed to verify it the template is already registerd.';
             writeLogOutput -LogString $msg;
             if (Get-SecretInfo -Vault $Script:vaultName -Name ($script:RegisteredModulePrefix + '*' + $Script:EntrySep + $ModuleName + $Script:EntrySep + $MinModuleVersion))
             {
@@ -157,8 +160,12 @@ param([Parameter(Mandatory = $true, Position = 0)][string]$ModuleName,
             writeLogOutput -LogString $msg;
             $d=([System.DateTime]::Now);
             [int]$madatoryHostVal=$true; #([System.String]::IsNullOrEmpty($HostVarDefaultValue)); 
-            # add 5 empty entries for future use to cred and hostname
-            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            # add 11 empty entries for future use to cred and hostname
+            $spareEntries=$Script:pPropSepVal; #+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            for ($i=0;$i -lt 10;$i++)
+            {
+                $spareEntries+=$Script:pPropSepVal;
+            }; # end for
             $metaData=@{
                 (($Script:credParamPrefix)+$PSCredentialVarName)=('PSCredential'+$Script:pPropSepVal+'1'+$Script:pPropSepVal+$PSCredentialVarHelpMessage+($Script:pPropSepVal)+$spareEntries);
                 (($Script:hostParamPrefix)+$HostVarName)=('String'+$Script:pPropSepVal+$madatoryHostVal+($Script:pPropSepVal)+$HostVarHelpMessage+($Script:pPropSepVal)+$HostVarDefaultValue+$spareEntries);
@@ -196,8 +203,8 @@ param([Parameter(Mandatory = $true, Position = 0)][string]$ModuleName,
             $errMsg=('Failed to write module configuration to ' + $script:ModuleCfgName)
             writeToModuleConfig -CfgData $moduleCfg;
         } # end try
-        catch {
-            writeLogError -ErrorMessage $errMsg -PSErrMessage ($_.Exception.Message) -PSErrStack $_;
+        catch {            
+            writeLogError -ErrorMessage $errMsg -PSErrMessage ($_.Exception.Message) -PSErrStack ($_);
         }; # end catch
     }; # end process
 
@@ -287,6 +294,7 @@ param([Parameter(Mandatory = $true, Position = 0)]
         {
             return;
         }; # end if
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -346,8 +354,12 @@ param([Parameter(Mandatory = $true, Position = 0)]
             else {
                 $dataString+=($Script:pPropSepVal);
             }; # end else
-            # add 5 empty entries for future use
-            $spareEntries=$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            # add 11 empty entries for future use
+            $spareEntries=$Script:pPropSepVal; #+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal+$Script:pPropSepVal;
+            for ($i=0;$i -lt 10;$i++)
+            {
+                $spareEntries+=$Script:pPropSepVal;
+            }; # end for
             $metaData.Add($newEntry,($dataString+$spareEntries));
 
             $pList=($metaData.(($script:metadataPList))).Split($Script:pPropSepVal);
@@ -439,7 +451,7 @@ param([Parameter(Mandatory = $true, Position = 0)]
     }; # end DynamicParam
 
     begin {
-        
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -579,7 +591,7 @@ param([Parameter(Mandatory = $true, Position = 0)]
     }; # end DynamicParam
 
     begin {
-        
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -749,7 +761,7 @@ param([Parameter(ParameterSetName='Module',Mandatory = $false, Position = 0)][Ar
      )
 
     begin {
-
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -914,7 +926,7 @@ param([Parameter(Mandatory = $false, Position = 0)][ArgumentCompleter( {
     } )][string]$ModuleName,
       [Parameter(Mandatory = $false, Position = 3)][switch]$Force
      )
-    DynamicParam
+   DynamicParam
     {                    
         if ($ModuleName) 
         {  
@@ -938,9 +950,9 @@ param([Parameter(Mandatory = $false, Position = 0)][ArgumentCompleter( {
             }; # end catch   
         }; # end if               
     }; # end DynamicParam
-
+#>
     begin {
-
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -1130,7 +1142,7 @@ DynamicParam
 }; # end DynamicParam
 
     begin {
-        
+        $errMsg='Unhandled exeption';
         
     }; # end begin
 
@@ -1266,7 +1278,7 @@ param([Parameter(Mandatory = $false, Position = 0)][ArgumentCompleter( {
     }; # end DynamicParam
 
     begin {
-
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -1440,7 +1452,7 @@ param([Parameter(Mandatory = $true, Position = 0)][ArgumentCompleter( {
     }; # end DynamicParam
 
     begin {
-
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
@@ -1656,7 +1668,7 @@ param([Parameter(ParameterSetName='Module',Mandatory = $false, Position = 0)][Ar
      )
 
     begin {
-
+        $errMsg='Unhandled exeption';
     }; # end begin
 
     process {
