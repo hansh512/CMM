@@ -1,0 +1,102 @@
+DESCRIPTION
+    The module CMM provides commands to manage entries created with the Microsoft PowerShell module 
+    Microsoft.PowerShell.SecretManagement. This moduel is a prerequesit for CMM.
+    The module is written for developers of modules and scripts. The module was primeraly developed
+    for PowerShell modules.
+    The idea behind CMM is which can be used in other PowerShell modules or script. A configuration
+    provides variables, with values, for other modules or scripts.
+    It is recommanded that for every module (and version of a module) an appropriate manifest is 
+    available.    
+    For every PowerShell module or script, a template, which describes the configuration,
+    is requiered. One template can be used for one or more configurations.
+    TEMPLATES 
+    For a PowerShell module or script, at least one template is requiered. If multiple versions of
+    a PowerShell module or script exists, and the versions require different configurations
+    multiple templates are needed. If a template is created the minimum version of the module/script
+    must be provided.
+    Example: There is a PowerShell module with the versions 1.0.0.0, 1.5.0.0 and 2.0.0.0 available. The module
+    2.0.0.0 needs a different parameter/variable setup (version 2.0.0.0 needs an addition parameter port). 
+    A template with the minimum version of 1.0.0.0 and a template with the minimum version of 2.0.0.0 must be created.
+    The modules with the versions 1.0.0.0 and 1.5.0.0 will use the configurations created with the template which
+    requires a minimum version of 1.0.0.0. The module with the version 2.0.0.0 will use the configurations 
+    created with the template which require a minimum version of 2.0.0.0.
+    For a template, the following properties are needed:
+    - Name (is build from the name of the module/script and the version )
+    - Description (optional description)
+    - Name for the parameter/variable which stores the credential (PSCredentail object)
+        - The name of the parameter/variable is configurable (depends on your module/script)
+        - Name for the parameter/variable which stores the name of the host which needs the credential
+        - Additional parameters/variables as needed by the module or script
+    The parameters/variables for the credential and host name are mandatory, additional 
+    parameters/variables are optional.
+    For the parameter/variable which stores the credential, a help messasge can be defined. 
+    For the parameter/variable which stores the host name, a help message and a default value
+    can be defined. Both are marked as mandatory parameters (more in the section about the configuration).
+    The parameter/variable for the credential requires an input of tpye PSCredentail.
+    The parameter/variable for the host requires an imput of tpye string.
+    For additional parameters/variables the following data tpyes can be defined:
+    - string
+    - int32
+    - boolean
+    For the additional parameters/variables help messages can be configured and it can be defined
+    if the parameter/variable is mandatory or not (more in the section about the configuration).
+    CONFIGURATION    
+    To create a configuration the following data is required:
+    - The template with the appropriate minimum version
+    - Name of the configuration
+    - Description of the configuration (optional)
+    - Credential (name of the parameter is defined in the template), mandatory parameter.
+    - Name of the host (name of the parameter is defined in the template), if a default value is configured
+      (in the template) and the parameter is omited, the default value will be use. If no default value
+      is configured, the parameter is mandatory.
+    - If the template provides additonal parameters, the additonal parameters are available. If default
+      values are configured (in the template) and the parameters are omitted the default values are used.
+    USING CONFIGURATION
+    The module CMM does not provide a command to access a particular configuration. The module provides an
+    object with the name
+    - $__CMM_ModuleData
+    The objecte provides some methods. The following methods are intended to be used from a PowerShell
+    module or script (some of the other methods are used by the module itself):
+    - GetConfigerationList
+    - GetConfig
+    - GetDefaultConfig
+    In the folder Examples, under the module root folder, example code is provided.
+    METHOD GetConfigerationList
+    The method requires the follwoing arguments:
+    - Name of the PowerShell module/script (data type string)
+    - Version of the PowerShell module/script (data type version)
+    - SkipTemplateVersionFiltering (boolean, default is FALSE)
+    The method returs a list of configurations for the module/script.
+    If the argument SkipTemplateVersionFiltering is not used, only configurations are returned, which are
+    created with the best matching template for the calling module/script. The best matching version is the
+    highest possible version for the module/script. 
+    Example: A version 1.0.0.0 and a version 1.1.0.0 exists. the module has a version of 1.2.0.0. Only configurations
+    created with the template 1.1.0.0 will be returned. 
+    Example SkipTemplateVersionFiltering used: A version 1.0.0.0 and a version 1.1.0.0 exists. For version 1.0.0.0 
+    the configurations Cfg1, Cfg2 and Cfg3 are available. For version 1.1.0.0 the configurations Cfg1 and Cfg2 are available:
+    The following configurations will be returned.
+    - Cfg1 (vesion 1.1.0.0)
+    - Cfg2 (version 1.1.0.0)
+    - Cfg3 (version 1.0.0.0), would not be returned if SkipTemplateVersionFiltering is set to FALSE (default)
+    METHOD GetConfig
+    The method GetConfig retieves the appropriate configuration from the Microsoft PowerShell module 
+    - Microsoft.PowerShell.SecretManagement
+    The method requires the follwoing arguments:
+    - Name of the PowerShell module/script (data type string)
+    - Version of the PowerShell module/script (data type version)
+    - Name of the configuration (data type string)
+    - SkipTemplateVersionFiltering (boolean, default is FALSE)
+    The beavior of the argument SkipTemplateVersionFiltering is the same as described for the method GetConfigerationList.
+    The method GetConfig returns the configuration as hashtable. The hashtable has the following keys:
+    -  ConfigName (name of the configuration)
+    - ConfigVersion (version of the configuration)
+    - Data (the data retrieved from the Microsoft module)
+    - InconsistentAttributes (Inconsistent attributes are possible if a template is edited after a configuration was created)
+    The key Data provides a hashtable with the variables for the PowerShell module. Which keys and values are available depends
+    on the template and configuration.
+   METHOD GetDefaultConfig
+   The method GetDefaultConfig returns the default config for the template. If no default config is set
+   an empty string will be returned.
+   The method expects the following arguments:
+   - ModuleName (data type string)
+   - Version (data type version)
